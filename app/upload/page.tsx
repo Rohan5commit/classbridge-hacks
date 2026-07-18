@@ -132,7 +132,7 @@ export default function UploadPage() {
               className={cn(
                 "group rounded-2xl border-2 p-5 text-left transition-all duration-200",
                 selectedDemo === demo.id
-                  ? "border-[var(--cb-primary)] bg-[var(--cb-primary)]/5 shadow-md"
+                  ? "border-[var(--cb-primary)] bg-[var(--cb-primary)]/5 shadow-md ring-2 ring-[var(--cb-primary)]/20"
                   : "border-border/50 bg-white hover:border-[var(--cb-primary)]/30 hover:shadow-sm"
               )}
             >
@@ -149,8 +149,8 @@ export default function UploadPage() {
                 {demo.description}
               </p>
               {selectedDemo === demo.id && (
-                <div className="mt-3 flex items-center gap-1 text-xs font-semibold text-[var(--cb-primary)]">
-                  <CheckCircle className="h-3.5 w-3.5" /> Selected
+                <div className="mt-3 flex items-center gap-1.5 rounded-lg bg-[var(--cb-primary)]/10 px-3 py-1.5 text-xs font-semibold text-[var(--cb-primary)]">
+                  <CheckCircle className="h-4 w-4" /> Selected
                 </div>
               )}
             </button>
