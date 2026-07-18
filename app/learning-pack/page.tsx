@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { ExplanationView } from "@/components/explanation-view";
 import { TranslationView } from "@/components/translation-view";
@@ -32,7 +32,6 @@ import {
 
 function LearningPackContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"explanation" | "translation" | "cards" | "practice" | "summary">("explanation");
@@ -54,14 +53,15 @@ function LearningPackContent() {
   const [simplifyResult, setSimplifyResult] = useState<SimplifySelectionResponse | null>(null);
   const [showSimplifyModal, setShowSimplifyModal] = useState(false);
 
-  // Text selection handler
+  // Track selected text for simplify feature
+  const [lastSelectedText, setLastSelectedText] = useState("");
+
   useEffect(() => {
     const handleMouseUp = () => {
       const selection = window.getSelection();
-      const selectedText = selection?.toString().trim();
-      if (selectedText && selectedText.length > 10) {
-        // Store selected text for simplify feature
-        (window as unknown as Record<string, unknown>).__selectedText = selectedText;
+      const text = selection?.toString().trim();
+      if (text && text.length > 10) {
+        setLastSelectedText(text);
       }
     };
     document.addEventListener("mouseup", handleMouseUp);
@@ -88,6 +88,12 @@ function LearningPackContent() {
           needsReview: false,
         });
 
+        // Load saved preferences
+        const savedPrefs = sessionStorage.getItem("classbridge-preferences");
+        if (savedPrefs) {
+          setPreferences(JSON.parse(savedPrefs));
+        }
+
         // Generate learning pack via API
         const response = await fetch("/api/generate-learning-pack", {
           method: "POST",
@@ -96,7 +102,7 @@ function LearningPackContent() {
             text,
             title,
             subject,
-            preferences,
+            preferences: savedPrefs ? JSON.parse(savedPrefs) : preferences,
           }),
         });
 
@@ -111,6 +117,15 @@ function LearningPackContent() {
         setStudyCards(data.studyCards || []);
         setPracticeQuestions(data.practiceQuestions || []);
         setAdultSummary(data.adultSummary);
+
+        // Save practice questions and summary for other pages
+        if (data.practiceQuestions) {
+          sessionStorage.setItem("classbridge-practice-questions", JSON.stringify(data.practiceQuestions));
+        }
+        if (data.adultSummary) {
+          sessionStorage.setItem("classbridge-adult-summary", JSON.stringify(data.adultSummary));
+        }
+
         setLoading(false);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Something went wrong");
@@ -123,8 +138,8 @@ function LearningPackContent() {
 
   // Handle simplify selection
   const handleSimplify = useCallback(async () => {
-    const selectedText = (window as unknown as Record<string, unknown>).__selectedText as string;
-    if (!selectedText) return;
+    if (!lastSelectedText) return;
+    const selectedText = lastSelectedText;
 
     try {
       const response = await fetch("/api/simplify", {
@@ -144,7 +159,7 @@ function LearningPackContent() {
     } catch (err) {
       console.error("Simplify error:", err);
     }
-  }, [extractedContent, preferences.language]);
+  }, [extractedContent, preferences.language, lastSelectedText]);
 
   const tabs = [
     { key: "explanation" as const, label: "Explanation", icon: BookOpen },

@@ -27,6 +27,8 @@ export default function UploadPage() {
   const [fileName, setFileName] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showPrefs, setShowPrefs] = useState(false);
+  const [prefs, setPrefs] = useState({ gradeLevel: "Grade 7", language: "Tamil", learningMode: "Explain simply" });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,54 +50,46 @@ export default function UploadPage() {
     setMode("upload");
   }, []);
 
+  const handleSelectPrefs = useCallback(() => {
+    let content = "";
+    let title = "";
+    let subject = "";
+
+    if (mode === "demo" && selectedDemo) {
+      const demo = getDemoWorksheet(selectedDemo);
+      if (!demo) { setError("Demo worksheet not found"); return; }
+      content = demo.content;
+      title = demo.title;
+      subject = demo.subject;
+    } else if (mode === "paste" && pastedText.trim()) {
+      content = pastedText.trim();
+      title = "Pasted Content";
+      subject = "General";
+    } else if (mode === "upload" && fileName) {
+      // For uploads, extract text from uploaded file
+      content = pastedText.trim() || "Uploaded content";
+      title = fileName;
+      subject = "General";
+    } else {
+      setError("Please select a demo, upload a file, or paste some text.");
+      return;
+    }
+
+    sessionStorage.setItem("classbridge-content", JSON.stringify({ text: content, title, subject, source: mode }));
+    setShowPrefs(true);
+  }, [mode, selectedDemo, pastedText, fileName]);
+
   const handleProcess = useCallback(async () => {
     setError(null);
     setIsProcessing(true);
-
     try {
-      let content = "";
-      let title = "";
-      let subject = "";
-
-      if (mode === "demo" && selectedDemo) {
-        const demo = getDemoWorksheet(selectedDemo);
-        if (!demo) {
-          setError("Demo worksheet not found");
-          setIsProcessing(false);
-          return;
-        }
-        content = demo.content;
-        title = demo.title;
-        subject = demo.subject;
-      } else if (mode === "paste" && pastedText.trim()) {
-        content = pastedText.trim();
-        title = "Pasted Content";
-        subject = "General";
-      } else if (mode === "upload" && fileName) {
-        // For uploads, we'll use a demo placeholder since we don't have OCR yet
-        setError("Image/PDF extraction is being processed. For the demo, please use a demo worksheet or paste text.");
-        setIsProcessing(false);
-        return;
-      } else {
-        setError("Please select a demo, upload a file, or paste some text.");
-        setIsProcessing(false);
-        return;
-      }
-
-      // Store content in sessionStorage for the learning pack page
-      sessionStorage.setItem("classbridge-content", JSON.stringify({
-        text: content,
-        title,
-        subject,
-        source: mode,
-      }));
-
+      sessionStorage.setItem("classbridge-preferences", JSON.stringify(prefs));
       router.push("/learning-pack");
     } catch (err) {
       setError("Something went wrong. Please try again.");
       setIsProcessing(false);
     }
-  }, [mode, selectedDemo, pastedText, fileName, router]);
+  }, [prefs, router]);
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
@@ -171,11 +165,11 @@ export default function UploadPage() {
       {mode === "upload" && (
         <div className="rounded-2xl border-2 border-dashed border-border/50 bg-white p-12 text-center transition-all hover:border-[var(--cb-primary)]/30">
           <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*,.pdf,.txt"
-            onChange={handleFileSelect}
-            className="hidden"
+            ref={fileInputRef}              type="file"
+              accept="image/*,.pdf,.txt"
+              onChange={handleFileSelect}
+              className="hidden"
+              tabIndex={-1}
             aria-label="Upload a file"
           />
           <FileUp className="mx-auto mb-4 h-12 w-12 text-[var(--cb-text-muted)]/40" />
@@ -228,27 +222,77 @@ export default function UploadPage() {
 
       {/* Process button */}
       <div className="mt-8 flex justify-center">
-        <button
-          onClick={handleProcess}
-          disabled={
-            isProcessing ||
-            (mode === "demo" && !selectedDemo) ||
-            (mode === "paste" && !pastedText.trim())
-          }
-          className="inline-flex items-center gap-2 rounded-xl bg-[var(--cb-primary)] px-8 py-3.5 text-base font-semibold text-white shadow-lg transition-all hover:bg-[var(--cb-primary-dark)] hover:shadow-xl disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98]"
-        >
-          {isProcessing ? (
-            <>
-              <Loader2 className="h-5 w-5 animate-spin" />
-              Processing...
-            </>
-          ) : (
-            <>
-              Generate Learning Pack
-              <ArrowRight className="h-4 w-4" />
-            </>
-          )}
-        </button>
+        {showPrefs ? (
+          <div className="w-full max-w-md rounded-2xl border border-border/50 bg-white p-6 shadow-sm">
+            <h3 className="mb-4 text-base font-bold text-[var(--cb-text)]">Learning Preferences</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="mb-1 block text-xs font-semibold text-[var(--cb-text-muted)]">Grade Level</label>
+                <select
+                  value={prefs.gradeLevel}
+                  onChange={(e) => setPrefs({ ...prefs, gradeLevel: e.target.value })}
+                  className="w-full rounded-xl border border-border/50 px-4 py-2.5 text-sm focus:border-[var(--cb-primary)] focus:outline-none"
+                >
+                  {["Grade 5","Grade 6","Grade 7","Grade 8","Grade 9","Grade 10"].map((g) => (
+                    <option key={g} value={g}>{g}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-semibold text-[var(--cb-text-muted)]">Language</label>
+                <select
+                  value={prefs.language}
+                  onChange={(e) => setPrefs({ ...prefs, language: e.target.value })}
+                  className="w-full rounded-xl border border-border/50 px-4 py-2.5 text-sm focus:border-[var(--cb-primary)] focus:outline-none"
+                >
+                  {["English","Tamil","Hindi"].map((l) => (
+                    <option key={l} value={l}>{l}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-semibold text-[var(--cb-text-muted)]">Learning Mode</label>
+                <select
+                  value={prefs.learningMode}
+                  onChange={(e) => setPrefs({ ...prefs, learningMode: e.target.value })}
+                  className="w-full rounded-xl border border-border/50 px-4 py-2.5 text-sm focus:border-[var(--cb-primary)] focus:outline-none"
+                >
+                  {["Explain simply","Step by step","With examples"].map((m) => (
+                    <option key={m} value={m}>{m}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="mt-6 flex justify-between">
+              <button
+                onClick={() => setShowPrefs(false)}
+                className="rounded-xl px-5 py-2.5 text-sm font-medium text-[var(--cb-text-muted)] hover:bg-[var(--cb-warm)]"
+              >
+                Back
+              </button>
+              <button
+                onClick={handleProcess}
+                disabled={isProcessing}
+                className="inline-flex items-center gap-2 rounded-xl bg-[var(--cb-primary)] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[var(--cb-primary-dark)] disabled:opacity-40"
+              >
+                {isProcessing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                Generate Learning Pack
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={handleSelectPrefs}
+            disabled={
+              (mode === "demo" && !selectedDemo) ||
+              (mode === "paste" && !pastedText.trim())
+            }
+            className="inline-flex items-center gap-2 rounded-xl bg-[var(--cb-primary)] px-8 py-3.5 text-base font-semibold text-white shadow-lg transition-all hover:bg-[var(--cb-primary-dark)] hover:shadow-xl disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98]"
+          >
+            Continue
+            <ArrowRight className="h-4 w-4" />
+          </button>
+        )}
       </div>
     </div>
   );
