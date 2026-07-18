@@ -1,26 +1,155 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --radius: 0.625rem;
+  /* ClassBridge Design System */
+  --cb-primary: oklch(0.55 0.15 180);
+  --cb-primary-light: oklch(0.72 0.12 180);
+  --cb-primary-dark: oklch(0.45 0.15 180);
+  --cb-secondary: oklch(0.65 0.1 200);
+  --cb-accent: oklch(0.75 0.08 160);
+  --cb-warm: oklch(0.92 0.04 80);
+  --cb-surface: oklch(0.98 0.005 200);
+  --cb-text: oklch(0.2 0.02 200);
+  --cb-text-muted: oklch(0.45 0.02 200);
+  --cb-success: oklch(0.65 0.15 145);
+  --cb-warning: oklch(0.75 0.15 80);
+  --cb-error: oklch(0.6 0.18 25);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* High Contrast Mode */
+.high-contrast {
+  --cb-primary: oklch(0.4 0.2 180);
+  --cb-primary-light: oklch(0.6 0.2 180);
+  --cb-primary-dark: oklch(0.3 0.2 180);
+  --cb-text: oklch(0.1 0 0);
+  --cb-text-muted: oklch(0.3 0 0);
+  --cb-surface: oklch(1 0 0);
+  --cb-warm: oklch(0.95 0.02 80);
+  --cb-surface: oklch(1 0 0);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.reduced-motion *, .reduced-motion *::before, .reduced-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Dyslexia-friendly mode */
+.dyslexia-mode {
+  font-family: 'OpenDyslexic', 'Comic Sans MS', 'Arial', sans-serif !important;
+  letter-spacing: 0.12em !important;
+  word-spacing: 0.16em !important;
+  line-height: 2 !important;
+}
+
+.dyslexia-mode.wide {
+  letter-spacing: 0.2em !important;
+  word-spacing: 0.25em !important;
+}
+
+.dyslexia-mode.wider {
+  letter-spacing: 0.3em !important;
+  word-spacing: 0.35em !important;
+}
+
+/* Spacing variants */
+.line-relaxed {
+  line-height: 1.8 !important;
+}
+.line-loose {
+  line-height: 2.2 !important;
+}
+
+/* Focus visible styles for keyboard navigation */
+*:focus-visible {
+  outline: 3px solid var(--cb-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Skip to content link */
+.skip-to-content {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  z-index: 9999;
+  padding: 1rem 2rem;
+  background: var(--cb-primary);
+  color: white;
+  font-weight: 600;
+  transition: top 0.2s;
+}
+.skip-to-content:focus {
+  top: 0;
+}
+
+/* Smooth scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--cb-surface);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--cb-primary-light);
+  border-radius: 4px;
+}
+
+/* Print styles */
+@media print {
+  .no-print { display: none !important; }
+}
+
+@theme inline {
+  --color-background: var(--cb-surface);
+  --color-foreground: var(--cb-text);
+  --color-card: oklch(1 0 0);
+  --color-card-foreground: var(--cb-text);
+  --color-popover: oklch(1 0 0);
+  --color-popover-foreground: var(--cb-text);
+  --color-primary: var(--cb-primary);
+  --color-primary-foreground: oklch(1 0 0);
+  --color-secondary: var(--cb-secondary);
+  --color-secondary-foreground: oklch(1 0 0);
+  --color-muted: var(--cb-warm);
+  --color-muted-foreground: var(--cb-text-muted);
+  --color-accent: var(--cb-accent);
+  --color-accent-foreground: var(--cb-text);
+  --color-destructive: var(--cb-error);
+  --color-destructive-foreground: oklch(1 0 0);
+  --color-border: oklch(0.88 0.01 200);
+  --color-input: oklch(0.88 0.01 200);
+  --color-ring: var(--cb-primary);
+  --color-chart-1: var(--cb-primary);
+  --color-chart-2: var(--cb-secondary);
+  --color-chart-3: var(--cb-accent);
+  --color-chart-4: oklch(0.6 0.12 120);
+  --color-chart-5: oklch(0.6 0.12 300);
+  --color-sidebar: oklch(0.97 0.008 200);
+  --color-sidebar-foreground: var(--cb-text);
+  --color-sidebar-primary: var(--cb-primary);
+  --color-sidebar-primary-foreground: oklch(1 0 0);
+  --color-sidebar-accent: var(--cb-accent);
+  --color-sidebar-accent-foreground: var(--cb-text);
+  --color-sidebar-border: oklch(0.88 0.01 200);
+  --color-sidebar-ring: var(--cb-primary);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 }
