@@ -22,16 +22,15 @@ export default function UploadPage() {
   const [selectedDemo, setSelectedDemo] = useState<string | null>(null);
   const [pastedText, setPastedText] = useState("");
   const [fileName, setFileName] = useState<string | null>(null);
+  const [filePreview, setFilePreview] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showPrefs, setShowPrefs] = useState(false);
   const [prefs, setPrefs] = useState({ gradeLevel: "Grade 7", language: "Tamil", learningMode: "Explain simply" });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const processFile = useCallback(async (file: File) => {
     setFileName(file.name);
     setError(null);
 
@@ -43,8 +42,46 @@ export default function UploadPage() {
       return;
     }
 
-    // For other files, we'll handle in the processing step
+    // For images, show preview
+    if (file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onload = (e) => setFilePreview(e.target?.result as string);
+      reader.readAsDataURL(file);
+    } else {
+      setFilePreview(null);
+    }
+
     setMode("upload");
+  }, []);
+
+  const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) await processFile(file);
+  }, [processFile]);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  }, []);
+
+  const handleDrop = useCallback(async (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) await processFile(file);
+  }, [processFile]);
+
+  const clearFile = useCallback(() => {
+    setFileName(null);
+    setFilePreview(null);
+    setPastedText("");
+    setMode("upload");
+    if (fileInputRef.current) fileInputRef.current.value = "";
   }, []);
 
   const handleSelectPrefs = useCallback(() => {
@@ -160,7 +197,17 @@ export default function UploadPage() {
 
       {/* Upload */}
       {mode === "upload" && (
-        <div className="rounded-2xl border-2 border-dashed border-border/50 bg-white p-12 text-center transition-all hover:border-[var(--cb-primary)]/30">
+        <div
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          className={cn(
+            "rounded-2xl border-2 border-dashed bg-white p-12 text-center transition-all",
+            isDragging
+              ? "border-[var(--cb-primary)] bg-[var(--cb-primary)]/5"
+              : "border-border/50 hover:border-[var(--cb-primary)]/30"
+          )}
+        >
           <input
             ref={fileInputRef}
             type="file"
@@ -171,23 +218,39 @@ export default function UploadPage() {
             id="file-upload-input"
             aria-label="Upload a file"
           />
-          <FileUp className="mx-auto mb-4 h-12 w-12 text-[var(--cb-text-muted)]/40" />
-          <p className="text-base font-semibold text-[var(--cb-text)]">
-            Drop a file here or click to browse
-          </p>
-          <p className="mt-1 text-sm text-[var(--cb-text-muted)]">
-            Supports images (JPG, PNG), PDFs, and text files
-          </p>
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="mt-4 rounded-xl bg-[var(--cb-primary)]/10 px-6 py-2.5 text-sm font-medium text-[var(--cb-primary)] hover:bg-[var(--cb-primary)]/20"
-          >
-            Choose File
-          </button>
-          {fileName && (
-            <p className="mt-3 flex items-center justify-center gap-2 text-sm text-[var(--cb-primary)]">
-              <CheckCircle className="h-4 w-4" /> {fileName}
-            </p>
+          {filePreview ? (
+            <div className="relative inline-block">
+              <img src={filePreview} alt="File preview" className="mx-auto max-h-[200px] rounded-xl object-contain" />
+              <button
+                onClick={clearFile}
+                className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-red-500 text-white shadow-lg hover:bg-red-600"
+                aria-label="Remove file"
+              >
+                <span className="text-lg leading-none">×</span>
+              </button>
+            </div>
+          ) : fileName ? (
+            <div className="flex flex-col items-center gap-2">
+              <FileUp className="h-12 w-12 text-[var(--cb-primary)]" />
+              <p className="text-sm font-medium text-[var(--cb-text)]">{fileName}</p>
+              <button onClick={clearFile} className="text-xs text-red-500 hover:text-red-600">Remove</button>
+            </div>
+          ) : (
+            <>
+              <FileUp className="mx-auto mb-4 h-12 w-12 text-[var(--cb-text-muted)]/40" />
+              <p className="text-base font-semibold text-[var(--cb-text)]">
+                Drop a file here or click to browse
+              </p>
+              <p className="mt-1 text-sm text-[var(--cb-text-muted)]">
+                Supports images (JPG, PNG), PDFs, and text files
+              </p>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="mt-4 rounded-xl bg-[var(--cb-primary)]/10 px-6 py-2.5 text-sm font-medium text-[var(--cb-primary)] hover:bg-[var(--cb-primary)]/20"
+              >
+                Choose File
+              </button>
+            </>
           )}
         </div>
       )}

@@ -27,6 +27,7 @@ import {
   Brain,
   MessageSquare,
   ArrowLeft,
+  CheckCircle,
 } from "lucide-react";
 
 function LearningPackContent() {
@@ -54,6 +55,8 @@ function LearningPackContent() {
 
   // Track selected text for simplify feature
   const [lastSelectedText, setLastSelectedText] = useState("");
+  const [packTitle, setPackTitle] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
     const handleMouseUp = () => {
@@ -119,7 +122,9 @@ function LearningPackContent() {
 
         if (cancelled) return;
 
+        setPackTitle(data.explanation?.title || title);
         setExplanation(data.explanation);
+        setShowSuccess(true);
         setTranslation(data.translation);
         setStudyCards(data.studyCards || []);
         setPracticeQuestions(data.practiceQuestions || []);
@@ -193,6 +198,50 @@ function LearningPackContent() {
         <p className="mt-2 text-sm text-[var(--cb-text-muted)]">
           Our AI is simplifying and translating the content for you.
         </p>
+      </div>
+    );
+  }
+
+  // Show success screen before entering the pack
+  if (showSuccess) {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center px-4">
+        <div className="max-w-lg rounded-3xl bg-white p-10 text-center shadow-xl">
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-teal-500">
+            <CheckCircle className="h-10 w-10 text-white" />
+          </div>
+          <h1 className="text-3xl font-bold text-[var(--cb-text)]">
+            Learning Pack Ready! 🎉
+          </h1>
+          <p className="mt-4 text-lg text-[var(--cb-text-muted)]">
+            Your personalized learning pack for <span className="font-semibold text-[var(--cb-primary)]">{packTitle}</span> is ready to explore.
+          </p>
+          <div className="mt-8 grid grid-cols-2 gap-4">
+            <div className="rounded-xl bg-blue-50 p-4">
+              <BookOpen className="mx-auto h-6 w-6 text-blue-500" />
+              <p className="mt-2 text-sm font-medium text-[var(--cb-text)]">Simplified Explanation</p>
+            </div>
+            <div className="rounded-xl bg-emerald-50 p-4">
+              <Globe className="mx-auto h-6 w-6 text-emerald-500" />
+              <p className="mt-2 text-sm font-medium text-[var(--cb-text)]">Bilingual Translation</p>
+            </div>
+            <div className="rounded-xl bg-purple-50 p-4">
+              <Brain className="mx-auto h-6 w-6 text-purple-500" />
+              <p className="mt-2 text-sm font-medium text-[var(--cb-text)]">Study Cards</p>
+            </div>
+            <div className="rounded-xl bg-amber-50 p-4">
+              <MessageSquare className="mx-auto h-6 w-6 text-amber-500" />
+              <p className="mt-2 text-sm font-medium text-[var(--cb-text)]">Practice Questions</p>
+            </div>
+          </div>
+          <button
+            onClick={() => setShowSuccess(false)}
+            className="mt-8 inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--cb-primary)] px-8 py-4 text-base font-semibold text-white shadow-lg transition-all hover:bg-[var(--cb-primary-dark)] hover:shadow-xl active:scale-[0.98]"
+          >
+            Start Learning
+            <ArrowRight className="h-5 w-5" />
+          </button>
+        </div>
       </div>
     );
   }

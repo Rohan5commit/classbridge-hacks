@@ -103,7 +103,11 @@ export async function nimStructuredResponse<T>(
   if (cleaned.endsWith("```")) cleaned = cleaned.slice(0, -3);
   cleaned = cleaned.trim();
 
-  return JSON.parse(cleaned) as T;
+  try {
+    return JSON.parse(cleaned) as T;
+  } catch {
+    throw new Error(`Failed to parse AI response as JSON: ${cleaned.slice(0, 200)}`);
+  }
 }
 
 /**
