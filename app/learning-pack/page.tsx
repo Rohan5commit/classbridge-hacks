@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { ExplanationView } from "@/components/explanation-view";
 import { TranslationView } from "@/components/translation-view";
 import { ReadAloudButton } from "@/components/read-aloud-button";
-import { OriginalTextView } from "@/components/original-text-view";
+
 import { SimplifyModal } from "@/components/simplify-modal";
 import {
   SimplifiedExplanation,
@@ -21,7 +21,6 @@ import {
 import {
   ArrowRight,
   Loader2,
-  CheckCircle,
   Settings,
   BookOpen,
   Globe,
