@@ -1,16 +1,13 @@
-import { z } from "zod";
+import { describe, it, expect } from "vitest";
 import {
   LearningMaterialSchema,
   ExtractedContentSchema,
   LearningPreferencesSchema,
   LearningPackSchema,
   SimplifiedExplanationSchema,
-  TranslationOutputSchema,
   StudyCardSchema,
   PracticeQuestionSchema,
-  PracticeAttemptSchema,
   AdultSupportSummarySchema,
-  SimplifySelectionSchema,
   SimplifySelectionResponseSchema,
   AccessibilityPrefsSchema,
 } from "@/lib/schemas";

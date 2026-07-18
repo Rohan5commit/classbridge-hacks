@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { cn } from "@/lib/utils";
 import { ReadAloudButton } from "./read-aloud-button";
 import {
   BookOpen,
@@ -9,8 +7,6 @@ import {
   AlertTriangle,
   Heart,
   ArrowRight,
-  ArrowLeft,
-  CheckCircle,
 } from "lucide-react";
 import { AdultSupportSummary } from "@/lib/schemas";
 
@@ -19,7 +15,6 @@ interface AdultSummaryViewProps {
 }
 
 export function AdultSummaryView({ summary }: AdultSummaryViewProps) {
-  const [showFull, setShowFull] = useState(false);
 
   return (
     <div className="mx-auto max-w-2xl">

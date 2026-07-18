@@ -6,18 +6,28 @@ import { AdultSummaryView } from "@/components/adult-summary-view";
 import { AdultSupportSummary } from "@/lib/schemas";
 import { ArrowLeft, Loader2 } from "lucide-react";
 
+function getStoredSummary(): AdultSupportSummary | null {
+  if (typeof window === "undefined") return null;
+  const stored = sessionStorage.getItem("classbridge-adult-summary");
+  if (stored) {
+    try {
+      return JSON.parse(stored);
+    } catch {
+      return null;
+    }
+  }
+  return null;
+}
+
 export default function SummaryPage() {
   const router = useRouter();
-  const [summary, setSummary] = useState<AdultSupportSummary | null>(null);
+  const [summary] = useState<AdultSupportSummary | null>(getStoredSummary);
 
   useEffect(() => {
-    const stored = sessionStorage.getItem("classbridge-adult-summary");
-    if (stored) {
-      setSummary(JSON.parse(stored));
-    } else {
+    if (!summary) {
       router.push("/learning-pack");
     }
-  }, [router]);
+  }, [summary, router]);
 
   if (!summary) {
     return (

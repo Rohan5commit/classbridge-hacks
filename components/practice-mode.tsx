@@ -10,6 +10,15 @@ interface PracticeModeProps {
   onAttempt: (attempt: PracticeAttempt) => void;
 }
 
+function normalizeAnswer(answer: string, questionType: string): string {
+  const trimmed = answer.trim().toLowerCase();
+  if (questionType === "multiple_choice") {
+    const letterMatch = trimmed.match(/^\(?([a-d])\)?/i);
+    if (letterMatch) return letterMatch[1].toUpperCase();
+  }
+  return trimmed;
+}
+
 export function PracticeMode({ questions, onAttempt }: PracticeModeProps) {
   const [currentQ, setCurrentQ] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState("");
@@ -23,7 +32,9 @@ export function PracticeMode({ questions, onAttempt }: PracticeModeProps) {
   const handleSubmit = useCallback(() => {
     if (!question || !selectedAnswer.trim()) return;
 
-    const isCorrect = selectedAnswer.trim().toLowerCase() === question.correctAnswer.toLowerCase();
+    const normalizedUserAnswer = normalizeAnswer(selectedAnswer, question.type);
+    const normalizedCorrect = normalizeAnswer(question.correctAnswer, question.type);
+    const isCorrect = normalizedUserAnswer === normalizedCorrect;
     const attempt: PracticeAttempt = {
       questionId: question.id,
       answer: selectedAnswer,
@@ -97,7 +108,7 @@ export function PracticeMode({ questions, onAttempt }: PracticeModeProps) {
             {question.options.map((option, i) => {
               const letter = String.fromCharCode(65 + i);
               const isSelected = selectedAnswer === letter;
-              const isCorrectAnswer = submitted && letter === question.correctAnswer;
+              const isCorrectAnswer = submitted && normalizeAnswer(letter, question.type) === normalizeAnswer(question.correctAnswer, question.type);
               const isWrong = submitted && isSelected && !isCorrectAnswer;
 
               return (

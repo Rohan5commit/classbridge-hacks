@@ -2,32 +2,39 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
 import { PracticeMode } from "@/components/practice-mode";
 import { PracticeQuestion, PracticeAttempt } from "@/lib/schemas";
 import {
   ArrowRight,
-  CheckCircle,
   Trophy,
   ArrowLeft,
   RotateCcw,
-  Sparkles,
 } from "lucide-react";
+
+function getStoredQuestions(): PracticeQuestion[] {
+  if (typeof window === "undefined") return [];
+  const stored = sessionStorage.getItem("classbridge-practice-questions");
+  if (stored) {
+    try {
+      return JSON.parse(stored);
+    } catch {
+      return [];
+    }
+  }
+  return [];
+}
 
 export default function PracticePage() {
   const router = useRouter();
-  const [questions, setQuestions] = useState<PracticeQuestion[]>([]);
+  const [questions] = useState<PracticeQuestion[]>(getStoredQuestions);
   const [attempts, setAttempts] = useState<PracticeAttempt[]>([]);
   const [completed, setCompleted] = useState(false);
 
   useEffect(() => {
-    const stored = sessionStorage.getItem("classbridge-practice-questions");
-    if (stored) {
-      setQuestions(JSON.parse(stored));
-    } else {
+    if (questions.length === 0) {
       router.push("/learning-pack");
     }
-  }, [router]);
+  }, [questions.length, router]);
 
   const handleAttempt = useCallback((attempt: PracticeAttempt) => {
     setAttempts((prev) => [...prev, attempt]);
@@ -39,9 +46,10 @@ export default function PracticePage() {
 
   useEffect(() => {
     if (allAnswered && !completed) {
-      setTimeout(() => setCompleted(true), 500);
+      const timer = setTimeout(() => setCompleted(true), 500);
+      return () => clearTimeout(timer);
     }
-  }, [allAnswered, completed, attempts.length]);
+  }, [allAnswered, completed]);
 
   if (questions.length === 0) {
     return (

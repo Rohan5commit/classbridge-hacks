@@ -6,8 +6,8 @@ import { cn } from "@/lib/utils";
 import { ExplanationView } from "@/components/explanation-view";
 import { TranslationView } from "@/components/translation-view";
 import { ReadAloudButton } from "@/components/read-aloud-button";
-
 import { SimplifyModal } from "@/components/simplify-modal";
+import { StudyCard as StudyCardComponent } from "@/components/study-card";
 import {
   SimplifiedExplanation,
   TranslationOutput,
@@ -69,6 +69,8 @@ function LearningPackContent() {
 
   // Load data and generate learning pack
   useEffect(() => {
+    let cancelled = false;
+
     const generate = async () => {
       try {
         const stored = sessionStorage.getItem("classbridge-content");
@@ -89,8 +91,10 @@ function LearningPackContent() {
 
         // Load saved preferences
         const savedPrefs = sessionStorage.getItem("classbridge-preferences");
+        let prefs: LearningPreferences = preferences;
         if (savedPrefs) {
-          setPreferences(JSON.parse(savedPrefs));
+          prefs = JSON.parse(savedPrefs);
+          setPreferences(prefs);
         }
 
         // Generate learning pack via API
@@ -101,7 +105,7 @@ function LearningPackContent() {
             text,
             title,
             subject,
-            preferences: savedPrefs ? JSON.parse(savedPrefs) : preferences,
+            preferences: prefs,
           }),
         });
 
@@ -111,6 +115,9 @@ function LearningPackContent() {
         }
 
         const data = await response.json();
+
+        if (cancelled) return;
+
         setExplanation(data.explanation);
         setTranslation(data.translation);
         setStudyCards(data.studyCards || []);
@@ -127,12 +134,16 @@ function LearningPackContent() {
 
         setLoading(false);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Something went wrong");
-        setLoading(false);
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "Something went wrong");
+          setLoading(false);
+        }
       }
     };
 
     generate();
+    return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- only run once on mount, preferences loaded from sessionStorage inside
   }, [router]);
 
   // Handle simplify selection
@@ -262,28 +273,7 @@ function LearningPackContent() {
             </p>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {studyCards.map((card, i) => (
-                <div key={card.id} className="group perspective-1000 h-56 w-full cursor-pointer" onClick={() => {}}>
-                  <div className="relative h-full w-full [transform-style:preserve-3d]">
-                    <div className="absolute inset-0 rounded-2xl bg-white p-5 shadow-md border border-border/50 [backface-visibility:hidden]">
-                      <div className="mb-2 flex items-center justify-between">
-                        <span className="rounded-full bg-[var(--cb-warm)] px-2.5 py-0.5 text-[11px] font-semibold text-[var(--cb-text-muted)]">
-                          Card {i + 1}
-                        </span>
-                        <span className="rounded-full bg-gradient-to-r from-blue-400 to-blue-600 px-2.5 py-0.5 text-[11px] font-semibold text-white capitalize">
-                          {card.category}
-                        </span>
-                      </div>
-                      <div className="mt-4 flex h-28 items-center justify-center">
-                        <p className="text-center text-lg font-bold text-[var(--cb-text)] leading-snug">
-                          {card.front}
-                        </p>
-                      </div>
-                      <p className="text-center text-xs text-[var(--cb-text-muted)]">
-                        Tap to reveal
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                <StudyCardComponent key={card.id} front={card.front} back={card.back} category={card.category} index={i} />
               ))}
             </div>
           </div>

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { nimChat, nimStructuredResponse, LEARNING_PACK_SYSTEM_PROMPT, NimChatMessage } from "@/lib/ai/nim-client";
+import { nimStructuredResponse, LEARNING_PACK_SYSTEM_PROMPT, NimChatMessage } from "@/lib/ai/nim-client";
 import { LearningPreferencesSchema, LearningPackSchema } from "@/lib/schemas";
 
 const RequestSchema = z.object({

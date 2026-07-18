@@ -2,7 +2,6 @@
 
 import { ReadAloudButton } from "./read-aloud-button";
 import { TranslationOutput } from "@/lib/schemas";
-import { cn } from "@/lib/utils";
 import { Languages, ArrowRightLeft } from "lucide-react";
 
 interface TranslationViewProps {

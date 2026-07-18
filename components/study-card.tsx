@@ -1,14 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { ReadAloudButton } from "./read-aloud-button";
 
 interface StudyCardProps {
-  id: string;
   front: string;
   back: string;
   category: string;
-  visualDescription: string;
   index: number;
 }
 
@@ -27,18 +24,16 @@ const categoryLabels: Record<string, string> = {
 };
 
 export function StudyCard({
-  id,
   front,
   back,
   category,
-  visualDescription,
   index,
 }: StudyCardProps) {
   const [flipped, setFlipped] = useState(false);
 
   return (
     <div
-      className="group perspective-1000 h-56 w-full cursor-pointer"
+      className="group h-56 w-full cursor-pointer perspective-1000"
       onClick={() => setFlipped(!flipped)}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
@@ -81,14 +76,6 @@ export function StudyCard({
             <span className="rounded-full bg-white/20 px-2.5 py-0.5 text-[11px] font-semibold text-white">
               Answer
             </span>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
-              className="rounded-lg bg-white/20 px-2 py-1 text-[10px] font-medium text-white hover:bg-white/30"
-            >
-              🔊
-            </button>
           </div>
           <div className="mt-3 flex h-28 items-center justify-center overflow-auto">
             <p className="text-center text-sm font-medium leading-relaxed text-white/95">

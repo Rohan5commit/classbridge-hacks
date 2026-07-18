@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
+import { createContext, useContext, useState, useCallback, useEffect } from "react";
 import { AccessibilityPrefs } from "../schemas";
 
 interface AccessibilityContextType {
@@ -22,20 +22,19 @@ const defaultPrefs: AccessibilityPrefs = {
 const AccessibilityContext = createContext<AccessibilityContextType | undefined>(undefined);
 
 export function AccessibilityProvider({ children }: { children: React.ReactNode }) {
-  const [prefs, setPrefsState] = useState<AccessibilityPrefs>(defaultPrefs);
-
-  // Load from localStorage on mount
-  useEffect(() => {
+  const [prefs, setPrefsState] = useState<AccessibilityPrefs>(() => {
+    if (typeof window === "undefined") return defaultPrefs;
     try {
       const stored = localStorage.getItem("classbridge-a11y");
       if (stored) {
         const parsed = JSON.parse(stored);
-        setPrefsState((prev) => ({ ...prev, ...parsed }));
+        return { ...defaultPrefs, ...parsed };
       }
     } catch {
       // ignore
     }
-  }, []);
+    return defaultPrefs;
+  });
 
   // Save to localStorage and apply to document on change
   useEffect(() => {

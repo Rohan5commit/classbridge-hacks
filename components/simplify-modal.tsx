@@ -1,7 +1,5 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { cn } from "@/lib/utils";
 import { SimplifySelectionResponse } from "@/lib/schemas";
 import { X, Lightbulb, MessageSquare, Languages } from "lucide-react";
 

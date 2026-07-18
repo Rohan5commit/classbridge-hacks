@@ -5,15 +5,12 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { demoWorksheets, getDemoWorksheet } from "@/lib/schemas/demo-materials";
 import {
-  Upload,
-  FileText,
   ClipboardPaste,
   Sparkles,
   ArrowRight,
   AlertCircle,
   Loader2,
   CheckCircle,
-  Image,
   FileUp,
 } from "lucide-react";
 
@@ -85,7 +82,7 @@ export default function UploadPage() {
     try {
       sessionStorage.setItem("classbridge-preferences", JSON.stringify(prefs));
       router.push("/learning-pack");
-    } catch (err) {
+    } catch {
       setError("Something went wrong. Please try again.");
       setIsProcessing(false);
     }

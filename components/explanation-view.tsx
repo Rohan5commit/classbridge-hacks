@@ -2,7 +2,6 @@
 
 import { ReadAloudButton } from "./read-aloud-button";
 import { SimplifiedExplanation } from "@/lib/schemas";
-import { cn } from "@/lib/utils";
 import {
   Lightbulb,
   BookOpen,

@@ -13,11 +13,7 @@ interface ReadAloudButtonProps {
 export function ReadAloudButton({ text, className, label }: ReadAloudButtonProps) {
   const [speaking, setSpeaking] = useState(false);
   const [paused, setPaused] = useState(false);
-  const [supported, setSupported] = useState(false);
-
-  useEffect(() => {
-    setSupported(typeof window !== "undefined" && "speechSynthesis" in window);
-  }, []);
+  const [supported] = useState(() => typeof window !== "undefined" && "speechSynthesis" in window);
 
   // Cleanup on unmount
   useEffect(() => {

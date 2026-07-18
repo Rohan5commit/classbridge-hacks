@@ -23,7 +23,7 @@ const features = [
     icon: Languages,
     title: "Bilingual Learning",
     description:
-      "See content side-by-side in English, Tamil, or Hindi. More languages coming soon. Understand in the language you're most comfortable with.",
+      "See content side-by-side in English, Tamil, or Hindi. More languages coming soon. Understand in the language you\u2019re most comfortable with.",
   },
   {
     icon: Globe,
@@ -152,7 +152,7 @@ export default function AboutPage() {
               <p className="mt-3 text-sm leading-relaxed text-[var(--cb-text-muted)]">
                 Schools with limited access to tutoring, special education, or one-on-one
                 teacher support can use ClassBridge as a supplementary learning assistant.
-                It's like having a patient tutor available 24/7.
+                It’s like having a patient tutor available 24/7.
               </p>
             </div>
           </div>
