@@ -162,11 +162,13 @@ export default function UploadPage() {
       {mode === "upload" && (
         <div className="rounded-2xl border-2 border-dashed border-border/50 bg-white p-12 text-center transition-all hover:border-[var(--cb-primary)]/30">
           <input
-            ref={fileInputRef}              type="file"
-              accept="image/*,.pdf,.txt"
-              onChange={handleFileSelect}
-              className="hidden"
-              tabIndex={-1}
+            ref={fileInputRef}
+            type="file"
+            accept="image/*,.pdf,.txt"
+            onChange={handleFileSelect}
+            className="hidden"
+            tabIndex={-1}
+            id="file-upload-input"
             aria-label="Upload a file"
           />
           <FileUp className="mx-auto mb-4 h-12 w-12 text-[var(--cb-text-muted)]/40" />
@@ -224,8 +226,9 @@ export default function UploadPage() {
             <h3 className="mb-4 text-base font-bold text-[var(--cb-text)]">Learning Preferences</h3>
             <div className="space-y-4">
               <div>
-                <label className="mb-1 block text-xs font-semibold text-[var(--cb-text-muted)]">Grade Level</label>
+                <label htmlFor="grade-level-select" className="mb-1 block text-xs font-semibold text-[var(--cb-text-muted)]">Grade Level</label>
                 <select
+                  id="grade-level-select"
                   value={prefs.gradeLevel}
                   onChange={(e) => setPrefs({ ...prefs, gradeLevel: e.target.value })}
                   className="w-full rounded-xl border border-border/50 px-4 py-2.5 text-sm focus:border-[var(--cb-primary)] focus:outline-none"
@@ -236,8 +239,9 @@ export default function UploadPage() {
                 </select>
               </div>
               <div>
-                <label className="mb-1 block text-xs font-semibold text-[var(--cb-text-muted)]">Language</label>
+                <label htmlFor="language-select" className="mb-1 block text-xs font-semibold text-[var(--cb-text-muted)]">Language</label>
                 <select
+                  id="language-select"
                   value={prefs.language}
                   onChange={(e) => setPrefs({ ...prefs, language: e.target.value })}
                   className="w-full rounded-xl border border-border/50 px-4 py-2.5 text-sm focus:border-[var(--cb-primary)] focus:outline-none"
@@ -248,8 +252,9 @@ export default function UploadPage() {
                 </select>
               </div>
               <div>
-                <label className="mb-1 block text-xs font-semibold text-[var(--cb-text-muted)]">Learning Mode</label>
+                <label htmlFor="learning-mode-select" className="mb-1 block text-xs font-semibold text-[var(--cb-text-muted)]">Learning Mode</label>
                 <select
+                  id="learning-mode-select"
                   value={prefs.learningMode}
                   onChange={(e) => setPrefs({ ...prefs, learningMode: e.target.value })}
                   className="w-full rounded-xl border border-border/50 px-4 py-2.5 text-sm focus:border-[var(--cb-primary)] focus:outline-none"

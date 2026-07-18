@@ -54,7 +54,7 @@ export default function PracticePage() {
   if (questions.length === 0) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <p className="text-[var(--cb-text-muted)]">Loading practice questions...</p>
+        <p className="text-[var(--cb-text-muted)]">Redirecting to learning pack...</p>
       </div>
     );
   }
