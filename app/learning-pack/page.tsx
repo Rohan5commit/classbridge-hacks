@@ -75,6 +75,7 @@ function LearningPackContent() {
       try {
         const stored = sessionStorage.getItem("classbridge-content");
         if (!stored) {
+          setLoading(false);
           router.push("/upload");
           return;
         }
