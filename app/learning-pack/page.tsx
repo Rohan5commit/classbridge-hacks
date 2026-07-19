@@ -17,6 +17,9 @@ import {
   ExtractedContent,
   LearningPreferences,
   SimplifySelectionResponse,
+  GRADE_LEVELS,
+  LANGUAGES,
+  LEARNING_MODES,
 } from "@/lib/schemas";
 import {
   ArrowRight,
@@ -44,9 +47,9 @@ function LearningPackContent() {
   const [practiceQuestions, setPracticeQuestions] = useState<PracticeQuestion[]>([]);
   const [adultSummary, setAdultSummary] = useState<AdultSupportSummary | null>(null);
   const [preferences, setPreferences] = useState<LearningPreferences>({
-    gradeLevel: "Grade 7",
-    language: "Tamil",
-    learningMode: "Explain simply",
+    gradeLevel: GRADE_LEVELS[2],
+    language: LANGUAGES[1],
+    learningMode: LEARNING_MODES[0],
   });
 
   // Simplify modal
@@ -97,7 +100,7 @@ function LearningPackContent() {
         const savedPrefs = sessionStorage.getItem("classbridge-preferences");
         const prefs: LearningPreferences = savedPrefs
           ? JSON.parse(savedPrefs)
-          : { gradeLevel: "Grade 7", language: "Tamil", learningMode: "Explain simply" };
+          : { gradeLevel: GRADE_LEVELS[2], language: LANGUAGES[1], learningMode: LEARNING_MODES[0] };
         setPreferences(prefs);
 
         // Generate learning pack via API

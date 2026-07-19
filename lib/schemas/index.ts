@@ -25,10 +25,14 @@ export const ExtractedContentSchema = z.object({
 export type ExtractedContent = z.infer<typeof ExtractedContentSchema>;
 
 // ─── Learning Preferences ────────────────────────────────────────────
+export const GRADE_LEVELS = ["Grade 5", "Grade 6", "Grade 7", "Grade 8", "Grade 9", "Grade 10"] as const;
+export const LANGUAGES = ["English", "Tamil", "Hindi"] as const;
+export const LEARNING_MODES = ["Explain simply", "Step by step", "With examples"] as const;
+
 export const LearningPreferencesSchema = z.object({
-  gradeLevel: z.enum(["Grade 5", "Grade 6", "Grade 7", "Grade 8", "Grade 9", "Grade 10"]),
-  language: z.enum(["English", "Tamil", "Hindi"]),
-  learningMode: z.enum(["Explain simply", "Step by step", "With examples"]),
+  gradeLevel: z.enum(GRADE_LEVELS),
+  language: z.enum(LANGUAGES),
+  learningMode: z.enum(LEARNING_MODES),
 });
 
 export type LearningPreferences = z.infer<typeof LearningPreferencesSchema>;

@@ -4,6 +4,7 @@ import { useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { demoWorksheets, getDemoWorksheet } from "@/lib/schemas/demo-materials";
+import { GRADE_LEVELS, LANGUAGES, LEARNING_MODES, LearningPreferences } from "@/lib/schemas";
 import {
   ClipboardPaste,
   Sparkles,
@@ -27,7 +28,7 @@ export default function UploadPage() {
   const [error, setError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showPrefs, setShowPrefs] = useState(false);
-  const [prefs, setPrefs] = useState({ gradeLevel: "Grade 7", language: "Tamil", learningMode: "Explain simply" });
+  const [prefs, setPrefs] = useState<LearningPreferences>({ gradeLevel: GRADE_LEVELS[2], language: LANGUAGES[1], learningMode: LEARNING_MODES[0] });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const processFile = useCallback(async (file: File) => {
@@ -297,10 +298,10 @@ export default function UploadPage() {
                 <select
                   id="grade-level-select"
                   value={prefs.gradeLevel}
-                  onChange={(e) => setPrefs({ ...prefs, gradeLevel: e.target.value })}
+                  onChange={(e) => setPrefs({ ...prefs, gradeLevel: e.target.value as typeof GRADE_LEVELS[number] })}
                   className="w-full rounded-xl border border-border/50 px-4 py-2.5 text-sm focus:border-[var(--cb-primary)] focus:outline-none"
                 >
-                  {["Grade 5","Grade 6","Grade 7","Grade 8","Grade 9","Grade 10"].map((g) => (
+                  {GRADE_LEVELS.map((g) => (
                     <option key={g} value={g}>{g}</option>
                   ))}
                 </select>
@@ -310,10 +311,10 @@ export default function UploadPage() {
                 <select
                   id="language-select"
                   value={prefs.language}
-                  onChange={(e) => setPrefs({ ...prefs, language: e.target.value })}
+                  onChange={(e) => setPrefs({ ...prefs, language: e.target.value as typeof LANGUAGES[number] })}
                   className="w-full rounded-xl border border-border/50 px-4 py-2.5 text-sm focus:border-[var(--cb-primary)] focus:outline-none"
                 >
-                  {["English","Tamil","Hindi"].map((l) => (
+                  {LANGUAGES.map((l) => (
                     <option key={l} value={l}>{l}</option>
                   ))}
                 </select>
@@ -323,10 +324,10 @@ export default function UploadPage() {
                 <select
                   id="learning-mode-select"
                   value={prefs.learningMode}
-                  onChange={(e) => setPrefs({ ...prefs, learningMode: e.target.value })}
+                  onChange={(e) => setPrefs({ ...prefs, learningMode: e.target.value as typeof LEARNING_MODES[number] })}
                   className="w-full rounded-xl border border-border/50 px-4 py-2.5 text-sm focus:border-[var(--cb-primary)] focus:outline-none"
                 >
-                  {["Explain simply","Step by step","With examples"].map((m) => (
+                  {LEARNING_MODES.map((m) => (
                     <option key={m} value={m}>{m}</option>
                   ))}
                 </select>
