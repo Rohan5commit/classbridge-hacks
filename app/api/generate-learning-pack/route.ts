@@ -10,6 +10,11 @@ const RequestSchema = z.object({
   preferences: LearningPreferencesSchema,
 });
 
+/** Escape characters that break JSON string embedding in prompts */
+function escapeForJson(str: string): string {
+  return str.replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t");
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -23,6 +28,9 @@ export async function POST(req: NextRequest) {
     }
 
     const { text, title, subject, preferences } = parsed.data;
+    const safeTitle = escapeForJson(title);
+    const safeSubject = escapeForJson(subject);
+    const safeText = escapeForJson(text.slice(0, 3000));
 
     const messages: NimChatMessage[] = [
       {
@@ -38,18 +46,18 @@ STUDENT PREFERENCES:
 - Language: ${preferences.language}
 - Learning Mode: ${preferences.learningMode}
 
-TOPIC: ${title}
-SUBJECT: ${subject}
+TOPIC: ${safeTitle}
+SUBJECT: ${safeSubject}
 
 ORIGINAL TEXT:
-${text.slice(0, 3000)}
+${safeText}
 
 Return a JSON object with these fields:
 {
   "explanation": {
     "title": "string",
-    "originalTopic": "${title}",
-    "gradeLevel": "${preferences.gradeLevel}",
+    "originalTopic": "${safeTitle}",
+    "gradeLevel": "${escapeForJson(preferences.gradeLevel)}",
     "simpleExplanation": "Clear explanation at ${preferences.gradeLevel} level, at least 100 words",
     "stepByStep": ["Step 1 with detail", "Step 2 with detail", "Step 3 with detail", "Step 4 with detail", "Step 5 with detail"],
     "keyVocabulary": [{"term": "term", "definition": "clear definition", "example": "example sentence"}],
@@ -82,7 +90,7 @@ Return a JSON object with these fields:
     {"id": "q-4", "type": "explain_own_words", "question": "Explain this concept in your own words", "correctAnswer": "Sample good answer", "explanation": "What to include", "hint": "hint"}
   ],
   "adultSummary": {
-    "topicCovered": "${title}",
+    "topicCovered": "${safeTitle}",
     "keyConcepts": ["concept1", "concept2", "concept3"],
     "difficultConcepts": [{"concept": "concept name", "whyDifficult": "why it might be hard"}],
     "revisionSuggestion": "Specific revision advice for the student",
