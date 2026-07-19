@@ -200,6 +200,24 @@ function LearningPackContent() {
     );
   }
 
+  // Error takes priority over success
+  if (error) {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center px-4">
+        <div className="max-w-md rounded-2xl border border-red-200 bg-red-50 p-8 text-center">
+          <h2 className="text-xl font-bold text-red-700">Something went wrong</h2>
+          <p className="mt-2 text-sm text-red-600">{error}</p>
+          <button
+            onClick={() => router.push("/upload")}
+            className="mt-4 rounded-xl bg-red-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-red-700"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   // Show success screen before entering the pack
   if (showSuccess) {
     return (
@@ -238,23 +256,6 @@ function LearningPackContent() {
           >
             Start Learning
             <ArrowRight className="h-5 w-5" />
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center px-4">
-        <div className="max-w-md rounded-2xl border border-red-200 bg-red-50 p-8 text-center">
-          <h2 className="text-xl font-bold text-red-700">Something went wrong</h2>
-          <p className="mt-2 text-sm text-red-600">{error}</p>
-          <button
-            onClick={() => router.push("/upload")}
-            className="mt-4 rounded-xl bg-red-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-red-700"
-          >
-            Try Again
           </button>
         </div>
       </div>
