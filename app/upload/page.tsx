@@ -100,8 +100,12 @@ export default function UploadPage() {
       title = "Pasted Content";
       subject = "General";
     } else if (mode === "upload" && fileName) {
-      // For uploads, extract text from uploaded file
-      content = pastedText.trim() || "Uploaded content";
+      // PDF/image text extraction not yet supported — only text files populate pastedText
+      if (!pastedText.trim()) {
+        setError("Image/PDF text extraction is not yet supported. Please paste text instead.");
+        return;
+      }
+      content = pastedText.trim();
       title = fileName;
       subject = "General";
     } else {
@@ -350,7 +354,8 @@ export default function UploadPage() {
             onClick={handleSelectPrefs}
             disabled={
               (mode === "demo" && !selectedDemo) ||
-              (mode === "paste" && !pastedText.trim())
+              (mode === "paste" && !pastedText.trim()) ||
+              (mode === "upload" && !fileName)
             }
             className="inline-flex items-center gap-2 rounded-xl bg-[var(--cb-primary)] px-8 py-3.5 text-base font-semibold text-white shadow-lg transition-all hover:bg-[var(--cb-primary-dark)] hover:shadow-xl disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98]"
           >
