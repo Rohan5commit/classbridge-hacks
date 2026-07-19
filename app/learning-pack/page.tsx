@@ -93,13 +93,12 @@ function LearningPackContent() {
           needsReview: false,
         });
 
-        // Load saved preferences
+        // Load saved preferences directly from sessionStorage (no fallback to state)
         const savedPrefs = sessionStorage.getItem("classbridge-preferences");
-        let prefs: LearningPreferences = preferences;
-        if (savedPrefs) {
-          prefs = JSON.parse(savedPrefs);
-          setPreferences(prefs);
-        }
+        const prefs: LearningPreferences = savedPrefs
+          ? JSON.parse(savedPrefs)
+          : { gradeLevel: "Grade 7", language: "Tamil", learningMode: "Explain simply" };
+        setPreferences(prefs);
 
         // Generate learning pack via API
         const response = await fetch("/api/generate-learning-pack", {
@@ -149,7 +148,6 @@ function LearningPackContent() {
 
     generate();
     return () => { cancelled = true; };
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- only run once on mount, preferences loaded from sessionStorage inside
   }, [router]);
 
   // Handle simplify selection
