@@ -2,16 +2,13 @@ const NIM_API_URL =
   process.env.NIM_API_URL ||
   "https://integrate.api.nvidia.com/v1/chat/completions";
 
-const NIM_API_KEY = process.env.NIM_API_KEY || "";
+/** Lazy getter — avoids module-level side-effect and works across edge runtimes */
+function getApiKey(): string {
+  return process.env.NIM_API_KEY || "";
+}
 
 const NIM_MODEL =
   process.env.NIM_MODEL || "meta/llama-3.1-8b-instruct";
-
-if (!NIM_API_KEY) {
-  console.warn(
-    "⚠️ NIM_API_KEY not set. AI features will not work. Set it in .env.local or Vercel environment variables."
-  );
-}
 
 export interface NimChatMessage {
   role: "system" | "user" | "assistant";
@@ -42,6 +39,7 @@ export async function nimChat(
     responseFormat?: { type: "json_object" };
   }
 ): Promise<string> {
+  const NIM_API_KEY = getApiKey();
   if (!NIM_API_KEY) {
     throw new Error(
       "NIM API key is not configured. Please set NIM_API_KEY environment variable."
