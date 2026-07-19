@@ -430,7 +430,11 @@ function LearningPackContent() {
       <div className="mt-12 flex justify-center gap-4">
         <button
           onClick={handleSimplify}
-          className="inline-flex items-center gap-2 rounded-xl border border-border/50 bg-white px-6 py-3 text-sm font-medium text-[var(--cb-text)] hover:bg-[var(--cb-warm)]"
+          disabled={!lastSelectedText}
+          className={cn(
+            "inline-flex items-center gap-2 rounded-xl border border-border/50 bg-white px-6 py-3 text-sm font-medium text-[var(--cb-text)] transition-all",
+            !lastSelectedText ? "opacity-40 cursor-not-allowed" : "hover:bg-[var(--cb-warm)]"
+          )}
         >
           <MessageSquare className="h-4 w-4" />
           Explain Selected Text
