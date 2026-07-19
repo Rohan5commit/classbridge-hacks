@@ -77,7 +77,7 @@ export function PracticeMode({ questions, onAttempt }: PracticeModeProps) {
         <div className="mt-2 h-2 rounded-full bg-[var(--cb-warm)]">
           <div
             className="h-2 rounded-full bg-gradient-to-r from-[var(--cb-primary)] to-[var(--cb-accent)] transition-all duration-500"
-            style={{ width: `${((currentQ + 1) / questions.length) * 100}%` }}
+            style={{ width: `${(progress / questions.length) * 100}%` }}
           />
         </div>
       </div>
