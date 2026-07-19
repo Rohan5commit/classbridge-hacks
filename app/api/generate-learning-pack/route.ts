@@ -123,8 +123,11 @@ Generate exactly 6 study cards and 4 practice questions. Make all content grade-
     // Validate
     const validation = LearningPackSchema.safeParse(learningPack);
     if (!validation.success) {
-      // Return raw data if validation fails - AI output may have slight schema variations
-      return NextResponse.json(learningPack);
+      console.error("Schema validation failed:", validation.error.flatten());
+      return NextResponse.json(
+        { error: "AI returned malformed data", details: validation.error.flatten() },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json(validation.data);
